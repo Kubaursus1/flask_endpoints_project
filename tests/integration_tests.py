@@ -1,8 +1,5 @@
 import pytest
 from app import app
-from app import post_user
-from app import patch_user
-from app import put_user
 from app import delete_user
 
 
@@ -20,26 +17,29 @@ def test_get_one_user_code(client):
     assert responce.status_code == 200
 
 
-def test_post_user_code():
+def test_post_user_code(client):
     user = {
         "name": "aaaa",
         "lastname": "bbb"}
-
-    assert post_user(user) == 201
-
-
-def test_patch_user_code():
-    id = 2
-    user = {"name":"blabla"}
-    assert patch_user(id, user) == 204
+    response = client.post("/users", json=user)
+    assert response.status_code == 201
 
 
-def test_put_user_code():
+def test_patch_user_code(client):
+    id = 3
+    user = {"name": "blabla"}
+    response = client.patch(f"/users/{id}", json=user)
+    assert response.status_code == 204
+
+
+def test_put_user_code(client):
     id = 8
     user = {"name": "Kuba", "lastname": "Niczyporuk"}
-    assert put_user(id, user) == 204
+    response = client.put(f"/users/{id}", json=user)
+    assert response.status_code == 204
 
 
-def test_delete_user_code():
+def test_delete_user_code(client):
     id = 1
-    assert delete_user(id) == 204
+    response = client.delete(f"/users/{id}")
+    assert response.status_code == 204

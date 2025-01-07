@@ -1,4 +1,5 @@
 import pytest
+from app import app
 from app import users
 from app import get_users
 from app import get_user
@@ -21,7 +22,8 @@ def test_post_user():
     user = {
         "name": "aaaa",
         "lastname": "bbb"}
-    post_user(user)
+    with app.test_request_context(json=user):
+        post_user()
 
     assert user in users.values()
 
@@ -30,7 +32,8 @@ def test_patch_user():
     id = 2
     key = "name"
     user = {key: "blabla"}
-    patch_user(id, user)
+    with app.test_request_context(json=user):
+        patch_user(id)
     value = list(user.values())
     assert value[0] == users[id][key]
 
@@ -38,7 +41,8 @@ def test_patch_user():
 def test_put_user():
     id = 8
     user = {"name": "Kuba", "lastname": "Niczyporuk"}
-    put_user(id, user)
+    with app.test_request_context(json=user):
+        put_user(id)
     assert users[id if id <= len(users) else list(users)[-1]] == user
 
 

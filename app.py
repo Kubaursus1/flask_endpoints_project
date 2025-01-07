@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, Response
 from flask import Flask, request, jsonify
 
 users = {
@@ -8,7 +8,6 @@ users = {
     3: {"name": "Emily", "lastname": "Davis"},
     4: {"name": "Michael", "lastname": "Wilson"}
 }
-
 
 app = Flask(__name__)
 
@@ -29,41 +28,45 @@ def get_users():
 def get_user(id):
     return users[id]
 
+
 @app.post('/users')
-def post_user(user):
+def post_user():
+    user = request.json
     id = find_first_free_id()
     users[id] = {"name": user["name"], "lastname": user["lastname"]}
-    return 201
+    return Response(status=201)
 
 
 @app.patch('/users/<int:id>')
-def patch_user(id, user):
+def patch_user(id):
+    user = request.json
     if id <= len(users) or users[id] is not None:
         if len(user) == 1:
             key = list(user.keys())
             if key[0] == 'name':
                 users[id] = {"name": user["name"], "lastname": users[id]["lastname"]}
-                return 204
+                return Response(status=204)
             elif key[0] == "lastname":
                 users[id] = {"name": users[id]["name"], "lastname": user["lastname"]}
-                return 204
-    return 400
+                return Response(status=204)
+    return Response(status=400)
 
 
 @app.put("/users/<int:id>")
-def put_user(id, user):
+def put_user(id):
+    user = request.json
     if id > len(users):
         id = len(users)
     users[id] = {"name": user["name"], "lastname": user["lastname"]}
-    return 204
+    return Response(status=204)
 
 
 @app.delete("/users/<int:id>")
 def delete_user(id):
     if id <= len(users) and users[id] is not None:
         users[id] = None
-        return 204
-    return 400
+        return Response(status=204)
+    return Response(status=400)
 
 
 if __name__ == '__main__':
